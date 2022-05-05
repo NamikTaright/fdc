@@ -7,18 +7,18 @@ library(dplyr, warn.conflicts = F)
 # Téléchargement des données
 # https://geoservices.ign.fr/adminexpress
 # Chargement des donnéess
-an <- '2020'
+an <- '2022'
 home <- "/home/namik/Ressources/GEO/"
-v <- "2-1"
-racine <- paste0("ADMIN-EXPRESS-COG_", v, "__SHP__FRA")
+v <- "3-1"
+racine <- paste0("ADMIN-EXPRESS_", v, "__SHP__FRA")
 proj <- ""
-suffixe <- "_2020-07-29/"
-suffixe2 <- "_2020-07-01/"
+suffixe <- "_L93_2022-04-15/"
+suffixe2 <- "_2022-04-15/"
 predirshp <- paste0(home, racine, proj, suffixe)
-suite <- paste0("ADMIN-EXPRESS-COG/1_DONNEES_LIVRAISON", suffixe2)
-fin <- paste0("ADE-COG_", v, "_SHP_LAMB93_FR")
+suite <- paste0("ADMIN-EXPRESS/1_DONNEES_LIVRAISON", suffixe2)
+fin <- paste0("ADE_", v, "_SHP_LAMB93_FR")
 dirshp <- paste0(predirshp, suite, fin)
-  
+
 # Départements de l'Île-de-France
 deps <- st_read(dsn=dirshp, layer="DEPARTEMENT", quiet = FALSE)
 depres = c('75', '92', '93', '94', '78', '95', '77', '91')
@@ -34,8 +34,9 @@ deppc <- deps[substr(deps$INSEE_DEP, 1, 2) %in% depres,]
 # entités rattachées de l'Île-de-France
 entr <- st_read(dsn=dirshp, layer="ARRONDISSEMENT_MUNICIPAL", quiet = FALSE)
 entr <- st_read(dsn=dirshp, layer="ENTITE_RATTACHEE", quiet = FALSE)
-depres = c('75056', '13055', '69123')
-commpar <- entr[entr$INSEE_RATT %in% depres,]
+# depres = c('75056', '13055', '69123')
+depres = c('75056')
+commpar <- entr[entr$INSEE_COM %in% depres,]
 
 # communes + arrondissements
 region <- deppc %>% 
@@ -46,6 +47,7 @@ region <- deppc %>%
          TYPE = STATUT)
 
 plot(st_geometry(region))
+plot(st_geometry(depppc))
 
 st_write(obj = region, dsn = paste0("../Data/idf_", an, ".gpkg"), layer = "region", delete_layer = TRUE)
 
